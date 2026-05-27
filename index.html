@@ -8,18 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --card: #1a1a26;
-    --border: #2a2a3d;
-    --accent: #7c6aff;
-    --accent2: #ff6a9b;
-    --text: #e8e8f0;
+    --bg: #f4f4f8;
+    --surface: #ffffff;
+    --card: #f0f0f5;
+    --border: #d0d0e0;
+    --accent: #5b4de0;
+    --accent2: #e0306a;
+    --text: #1a1a2e;
     --muted: #6b6b8a;
-    --green: #4ade80;
-    --yellow: #fbbf24;
-    --red: #f87171;
-    --blue: #60a5fa;
+    --green: #16a34a;
+    --yellow: #b45309;
+    --red: #dc2626;
+    --blue: #2563eb;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -35,8 +35,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(124,106,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124,106,255,0.04) 1px, transparent 1px);
+      linear-gradient(rgba(91,77,224,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,77,224,0.06) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
@@ -156,7 +156,7 @@
     transition: border-color 0.2s;
   }
   select:focus { border-color: var(--accent); }
-  select option { background: var(--card); }
+  select option { background: #ffffff; color: var(--text); }
 
   .range-field {
     display: flex;
@@ -357,15 +357,15 @@
   .lead-link:hover { opacity: 1; text-decoration: underline; }
 
   /* Status colors */
-  .s-contract { color: var(--green); border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.06); }
-  .s-followup { color: var(--blue); border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.06); }
-  .s-callbooked { color: var(--accent); border-color: rgba(124,106,255,0.3); background: rgba(124,106,255,0.06); }
-  .s-new { color: #34d399; border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.06); }
-  .s-reschedule { color: var(--yellow); border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.06); }
-  .s-ltfu { color: #fb923c; border-color: rgba(251,146,60,0.3); background: rgba(251,146,60,0.06); }
-  .s-noshow { color: var(--red); border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.06); }
-  .s-nonresponsive { color: var(--muted); border-color: rgba(107,107,138,0.3); background: rgba(107,107,138,0.06); }
-  .s-other { color: var(--muted); border-color: rgba(107,107,138,0.2); background: rgba(107,107,138,0.04); }
+  .s-contract { color: #15803d; border-color: rgba(21,128,61,0.35); background: rgba(21,128,61,0.08); }
+  .s-followup { color: #1d4ed8; border-color: rgba(29,78,216,0.35); background: rgba(29,78,216,0.08); }
+  .s-callbooked { color: var(--accent); border-color: rgba(91,77,224,0.35); background: rgba(91,77,224,0.08); }
+  .s-new { color: #0f766e; border-color: rgba(15,118,110,0.35); background: rgba(15,118,110,0.08); }
+  .s-reschedule { color: #b45309; border-color: rgba(180,83,9,0.35); background: rgba(180,83,9,0.08); }
+  .s-ltfu { color: #c2410c; border-color: rgba(194,65,12,0.35); background: rgba(194,65,12,0.08); }
+  .s-noshow { color: #dc2626; border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.08); }
+  .s-nonresponsive { color: var(--muted); border-color: rgba(107,107,138,0.35); background: rgba(107,107,138,0.08); }
+  .s-other { color: var(--muted); border-color: rgba(107,107,138,0.25); background: rgba(107,107,138,0.05); }
 
   .empty-state {
     text-align: center;
@@ -396,7 +396,7 @@
   .page-btn:hover, .page-btn.active {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(124,106,255,0.08);
+    background: rgba(91,77,224,0.08);
   }
   .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
