@@ -158,6 +158,74 @@
   select:focus { border-color: var(--accent); }
   select option { background: #ffffff; color: var(--text); }
 
+  /* Status pill toggles */
+  .status-filter-row {
+    margin-top: 14px;
+  }
+  .status-filter-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .status-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .status-pill:hover { border-color: var(--accent); color: var(--accent); }
+  .status-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .status-pill.pill-all.active {
+    background: var(--text);
+    border-color: var(--text);
+    color: #fff;
+  }
+
+  /* Max per status input */
+  .num-field {
+    display: flex;
+    flex-direction: column;
+    min-width: 130px;
+  }
+  input[type="number"] {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { opacity: 1; }
+  input[type="number"]:focus { border-color: var(--accent); }
+
   .range-field {
     display: flex;
     flex-direction: column;
@@ -423,24 +491,28 @@
       </div>
       <button class="btn" id="searchBtn" onclick="runSearch()">Find Leads</button>
     </div>
-    <div class="filter-row">
-      <div class="filter-field">
-        <label for="statusFilter">Status Filter</label>
-        <select id="statusFilter" onchange="applyFilters()">
-          <option value="">All Statuses</option>
-          <option value="📄 Contract Sent">📄 Contract Sent</option>
-          <option value="📞 Follow Up">📞 Follow Up</option>
-          <option value="☎️ Call Booked">☎️ Call Booked</option>
-          <option value="🆕 New">🆕 New</option>
-          <option value="🕛 Reschedule">🕛 Reschedule</option>
-          <option value="🗓️ Long Term Follow Up">🗓️ Long Term Follow Up</option>
-          <option value="👻 No Show">👻 No Show</option>
-          <option value="💤 Non-responsive">💤 Non-responsive</option>
-        </select>
+    <div class="status-filter-row">
+      <span class="status-filter-label">Status Filter</span>
+      <div class="status-pills">
+        <span class="status-pill pill-all active" data-status="" onclick="toggleStatusPill(this)">All</span>
+        <span class="status-pill s-contract" data-status="📄 Contract Sent" onclick="toggleStatusPill(this)">📄 Contract Sent</span>
+        <span class="status-pill s-followup" data-status="📞 Follow Up" onclick="toggleStatusPill(this)">📞 Follow Up</span>
+        <span class="status-pill s-callbooked" data-status="☎️ Call Booked" onclick="toggleStatusPill(this)">☎️ Call Booked</span>
+        <span class="status-pill s-new" data-status="🆕 New" onclick="toggleStatusPill(this)">🆕 New</span>
+        <span class="status-pill s-reschedule" data-status="🕛 Reschedule" onclick="toggleStatusPill(this)">🕛 Reschedule</span>
+        <span class="status-pill s-ltfu" data-status="🗓️ Long Term Follow Up" onclick="toggleStatusPill(this)">🗓️ Long Term Follow Up</span>
+        <span class="status-pill s-noshow" data-status="👻 No Show" onclick="toggleStatusPill(this)">👻 No Show</span>
+        <span class="status-pill s-nonresponsive" data-status="💤 Non-responsive" onclick="toggleStatusPill(this)">💤 Non-responsive</span>
       </div>
+    </div>
+    <div class="filter-row">
       <div class="range-field">
         <div class="range-label">Max Distance: <span class="range-val" id="distVal">50</span> mi</div>
         <input type="range" id="distFilter" min="1" max="100" value="50" step="1" oninput="document.getElementById('distVal').textContent=this.value; applyFilters()">
+      </div>
+      <div class="num-field">
+        <label for="maxPerStatus">Max per Status</label>
+        <input type="number" id="maxPerStatus" min="1" max="9999" value="10" onchange="currentPage=1; applyFilters()">
       </div>
       <div class="filter-field">
         <label for="showUnknown" style="cursor:pointer;display:flex;align-items:center;gap:6px;">
@@ -640,17 +712,59 @@ function getMaxPossibleDist() {
   return 3000; // continental US diagonal ~2800mi
 }
 
+let activeStatuses = new Set(); // empty = all
+
+function toggleStatusPill(el) {
+  const status = el.dataset.status;
+  const allPill = document.querySelector('.pill-all');
+
+  if (status === '') {
+    // "All" clicked — clear specific selections
+    activeStatuses.clear();
+    document.querySelectorAll('.status-pill:not(.pill-all)').forEach(p => p.classList.remove('active'));
+    allPill.classList.add('active');
+  } else {
+    // Toggle this status
+    if (activeStatuses.has(status)) {
+      activeStatuses.delete(status);
+      el.classList.remove('active');
+    } else {
+      activeStatuses.add(status);
+      el.classList.add('active');
+    }
+    // Update "All" pill state
+    if (activeStatuses.size === 0) {
+      allPill.classList.add('active');
+    } else {
+      allPill.classList.remove('active');
+    }
+  }
+  currentPage = 1;
+  applyFilters();
+}
+
 function applyFilters() {
   if (!scoredLeads.length) return;
-  const statusF = document.getElementById('statusFilter').value;
   const maxDist = parseFloat(document.getElementById('distFilter').value);
   const showUnknown = document.getElementById('showUnknown').checked;
-  filteredLeads = scoredLeads.filter(l => {
-    if (statusF && l.status !== statusF) return false;
+  const maxPerStatus = parseInt(document.getElementById('maxPerStatus').value) || 10;
+
+  // Pre-filter by distance/unknown first, then apply per-status cap
+  const preFiltered = scoredLeads.filter(l => {
+    if (activeStatuses.size > 0 && !activeStatuses.has(l.status)) return false;
     if (l.dist === null && !showUnknown) return false;
     if (l.dist !== null && l.dist > maxDist) return false;
     return true;
   });
+
+  // Apply per-status cap — take top N of each status (already sorted by combined score)
+  const statusCounts = {};
+  filteredLeads = preFiltered.filter(l => {
+    const s = l.status || 'Unknown';
+    statusCounts[s] = (statusCounts[s] || 0) + 1;
+    return statusCounts[s] <= maxPerStatus;
+  });
+
   currentPage = 1;
   renderResults();
 }
